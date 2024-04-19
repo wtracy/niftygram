@@ -17,7 +17,7 @@ contract ExchangeTest is Test, ERC721Holder {
 		mock.mint(address(this));
 	}
 
-	function test_whatever() public {
+	function test_multiple721swaps() public {
 		mock.safeTransferFrom(address(this), address(ex), 1);
 		assertEq(address(ex), mock.ownerOf(1));
 
