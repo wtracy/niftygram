@@ -66,13 +66,9 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 			IERC1155(current).safeTransferFrom(address(this), msg.sender, currentId, 1, "");
 
 		IERC165 i = IERC165(inbound);
-		if (!i.supportsInterface(type(IERC165).interfaceId))
-			revert NotNFT();
 		if (i.supportsInterface(erc721id))
 			IERC721(inbound).safeTransferFrom(msg.sender, address(this), inId);
-		else if (i.supportsInterface(erc1155id))
-			IERC1155(inbound).safeTransferFrom(msg.sender, address(this), inId, 1, "");
 		else
-			revert NotNFT();
+			IERC1155(inbound).safeTransferFrom(msg.sender, address(this), inId, 1, "");
 	}
 }
