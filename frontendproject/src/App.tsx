@@ -6,6 +6,13 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
 
+  // Connect wallet
+  // Set chain
+  // Select NFT
+  // Execute
+  // Wait
+  // Show received NFT
+
   return (
     <>
       <div>
