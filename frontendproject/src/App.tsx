@@ -11,8 +11,9 @@ import {
   mainnet,
   polygon,
   optimism,
-  arbitrum,
+  linea,
   base,
+  zkSync
 } from 'wagmi/chains';
 import {
   QueryClientProvider,
@@ -24,7 +25,7 @@ import './App.css'
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, arbitrum, base],
+  chains: [mainnet, polygon, optimism, base, linea, zkSync],
   ssr: false
 });
 const queryClient = new QueryClient();
