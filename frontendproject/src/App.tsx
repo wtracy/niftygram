@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState } from 'react';
+import { useWriteContract } from 'wagmi';
+//import { abi } from "./abi";
 
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -33,8 +35,12 @@ const queryClient = new QueryClient();
 function App() {
   const [count, setCount] = useState(0)
 
-  // Connect wallet
-  // Set chain
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const formData = new FormData(e.target as HTMLFormElement)
+    const tokenId = formData.get('contract') as string
+  }
+
   // Select NFT
   // Execute
   // Wait
@@ -46,6 +52,9 @@ function App() {
       <QueryClientProvider client={queryClient}>
       <RainbowKitProvider>
       <ConnectButton />
+      <form>
+      NFT contract address: <input name="contract" type="text" minlength="3" maxlength="42" size="42" /><button type="submit">Approve transaction</button>
+      </form>
       </RainbowKitProvider>
       </QueryClientProvider>
       </WagmiProvider>
