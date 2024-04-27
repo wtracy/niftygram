@@ -32,22 +32,38 @@ const config = getDefaultConfig({
 });
 const queryClient = new QueryClient();
 
-function App() {
-  const [count, setCount] = useState(0);
-  const { data: hash, writeContract } = useWriteContract();
+function TransactForm() {
+  const {status, data: hash, error, writeContract } = useWriteContract();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const contractAddress = formData.get('contract') as string
+    e.preventDefault();
+    console.log('submit()');
+    const formData = new FormData(e.target as HTMLFormElement);
+    const contractAddress = formData.get('contract') as string;
+    const nftId = formData.get('nftid') as integer;
+    console.log('writeContract()');
     writeContract({
       address: contractAddress,
       abi,
       functionName: 'approve',
-      args: []
+      args: [contractAddress, nftid]
     });
+    console.log('writeContract() called');
   }
 
+  return (
+    <>
+    <form onSubmit={submit}>
+      NFT contract address: <input name="contract" type="text" minLength="3" maxLength="42" size="42" />
+      NFT ID: <input type="number" id="nftid" min="0" />
+      <button type="submit">Approve transaction</button>
+    </form>
+    {status} {error && String(error)}
+    {hash && <div>Transaction hash: {hash}</div>}
+    </>);
+}
+
+function App() {
   // Select NFT
   // Execute
   // Wait
@@ -59,10 +75,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
       <RainbowKitProvider>
       <ConnectButton />
-      <form>
-      NFT contract address: <input name="contract" type="text" minlength="3" maxlength="42" size="42" /><button type="submit">Approve transaction</button>
-      </form>
-      {hash && <div>Transaction hash: {hash}</div>}
+      <TransactForm />
       </RainbowKitProvider>
       </QueryClientProvider>
       </WagmiProvider>
