@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useWriteContract } from 'wagmi';
-//import { abi } from "./abi";
+import { abi } from "./abi";
 
 import '@rainbow-me/rainbowkit/styles.css';
 import {
@@ -33,12 +33,19 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
+  const { data: hash, writeContract } = useWriteContract();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
-    const tokenId = formData.get('contract') as string
+    const contractAddress = formData.get('contract') as string
+    writeContract({
+      address: contractAddress,
+      abi,
+      functionName: 'approve',
+      args: []
+    });
   }
 
   // Select NFT
@@ -55,6 +62,7 @@ function App() {
       <form>
       NFT contract address: <input name="contract" type="text" minlength="3" maxlength="42" size="42" /><button type="submit">Approve transaction</button>
       </form>
+      {hash && <div>Transaction hash: {hash}</div>}
       </RainbowKitProvider>
       </QueryClientProvider>
       </WagmiProvider>
