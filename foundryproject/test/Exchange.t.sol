@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
-import {MyNFT} from "./ERC721Mock.sol";
+import {ERC721Mock} from "../src/ERC721Mock.sol";
 
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "lib/@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
@@ -13,12 +13,12 @@ import {Exchange} from "../src/Exchange.sol";
 contract ExchangeTest is Test, ERC721Holder, ERC1155Holder {
 	Exchange ex;
 
-	MyNFT mock;
+	ERC721Mock mock;
 	Mock1155 mock1155;
 
 	function setUp() public {
 		ex = new Exchange();
-		mock = new MyNFT("","","");
+		mock = new ERC721Mock("","","");
 		mock.mint(address(this));
 		mock.mint(address(this));
 		mock1155 = new Mock1155();
