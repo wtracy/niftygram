@@ -25,6 +25,8 @@ import {
 
 import './App.css'
 
+const contractAddress = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0';
+
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
@@ -35,27 +37,28 @@ const queryClient = new QueryClient();
 
 function TransactForm() {
   const {status, data: hash, error, writeContract } = useWriteContract();
+  const [nftAddress, setNftAddress] = useState('');
+  const [nftId, setNftId] = useState(0);
 
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
+  async function submitApproval(e) {
     e.preventDefault();
-    console.log('submit()');
-    const formData = new FormData(e.target as HTMLFormElement);
-    const contractAddress = formData.get('contract') as string;
-    console.log('writeContract()');
+
     writeContract({
-      address: contractAddress,
-      abi,
-      functionName: 'setApprovalForAll',
-      args: [contractAddress, true]
+        address: nftAddress,
+        abi,
+        functionName: 'setApprovalForAll',
+        args: [contractAddress, true]
     });
-    console.log('writeContract() called');
   }
 
   return (
     <>
-    <form onSubmit={submit}>
-      NFT contract address: <input name="contract" type="text" minLength="3" maxLength="42" size="42" />
-      <button type="submit">Approve transaction</button>
+    <form>
+      NFT contract address:
+      <input name="contract" type="text" minLength="3" maxLength="42" size="44" value={nftAddress} onChange={e=>{setNftAddress(e.target.value)}} />
+      <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button><br />
+      NFT ID: <input type="number" id="nftid" min="0" value={nftId} onChange={e=>{setNftId(e.target.value)}} />
+      <button id="execute" type="submit">Trade</button>
     </form>
     {status} {error && String(error)}
     {hash && <div>Transaction hash: {hash}</div>}
