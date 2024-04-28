@@ -41,7 +41,6 @@ function TransactForm() {
     console.log('submit()');
     const formData = new FormData(e.target as HTMLFormElement);
     const contractAddress = formData.get('contract') as string;
-    const nftId = formData.get('nftid') as integer;
     console.log('writeContract()');
     writeContract({
       address: contractAddress,
@@ -56,7 +55,6 @@ function TransactForm() {
     <>
     <form onSubmit={submit}>
       NFT contract address: <input name="contract" type="text" minLength="3" maxLength="42" size="42" />
-      NFT ID: <input type="number" id="nftid" min="0" />
       <button type="submit">Approve transaction</button>
     </form>
     {status} {error && String(error)}
