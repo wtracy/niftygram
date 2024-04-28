@@ -15,7 +15,8 @@ import {
   optimism,
   linea,
   base,
-  zkSync
+  zkSync,
+  localhost
 } from 'wagmi/chains';
 import {
   QueryClientProvider,
@@ -27,7 +28,7 @@ import './App.css'
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, base, linea, zkSync],
+  chains: [mainnet, polygon, optimism, base, linea, zkSync, localhost],
   ssr: false
 });
 const queryClient = new QueryClient();
@@ -45,8 +46,8 @@ function TransactForm() {
     writeContract({
       address: contractAddress,
       abi,
-      functionName: 'approve',
-      args: [contractAddress, nftid]
+      functionName: 'setApprovalForAll',
+      args: [contractAddress, true]
     });
     console.log('writeContract() called');
   }
