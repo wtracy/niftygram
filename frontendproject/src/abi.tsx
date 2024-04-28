@@ -17,5 +17,15 @@ export const abi = [
       {name: 'approved', type: 'bool'}
     ],
     outputs: []
+  },
+  {
+    name: 'swap',
+    type: 'function',
+    stateMutability: 'payable',
+    inputs: [
+      {name: 'inbound', type: 'address'},
+      {name: 'inId', type: 'uint256'}
+    ],
+    outputs: []
   }
 ] as const;

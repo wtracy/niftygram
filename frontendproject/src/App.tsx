@@ -51,6 +51,17 @@ function TransactForm() {
     });
   }
 
+  async function execute(e) {
+    e.preventDefault();
+
+    writeContract({
+      address: contractAddress,
+      abi,
+      functionName: 'swap',
+      args: [nftAddress, nftId]
+    });
+  }
+
   return (
     <>
     <form>
@@ -58,7 +69,7 @@ function TransactForm() {
       <input name="contract" type="text" minLength="3" maxLength="42" size="44" value={nftAddress} onChange={e=>{setNftAddress(e.target.value)}} />
       <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button><br />
       NFT ID: <input type="number" id="nftid" min="0" value={nftId} onChange={e=>{setNftId(e.target.value)}} />
-      <button id="execute" type="submit">Trade</button>
+      <button onClick={execute} id="execute" type="submit">Trade</button>
     </form>
     {status} {error && String(error)}
     {hash && <div>Transaction hash: {hash}</div>}
