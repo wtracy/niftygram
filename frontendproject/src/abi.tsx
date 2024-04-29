@@ -27,5 +27,14 @@ export const abi = [
       {name: 'inId', type: 'uint256'}
     ],
     outputs: []
+  },
+  {
+    name: 'gift',
+    type: 'event',
+    inputs: [
+      {indexed: true, name: 'who', type: 'address'},
+      {indexed: false, name: 'what', type: 'address'},
+      {indexed: false, name: 'id', type: 'uint256'}
+    ]
   }
 ] as const;

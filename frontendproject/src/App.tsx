@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useWriteContract } from 'wagmi';
+import { useState, useEffect } from 'react';
 import { abi } from "./abi";
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -8,7 +7,8 @@ import {
   RainbowKitProvider,
   ConnectButton
 } from '@rainbow-me/rainbowkit';
-import { WagmiProvider } from 'wagmi';
+import {WagmiProvider, useWriteContract} from 'wagmi';
+import {getAccount, watchContractEvent} from '@wagmi/core';
 import {
   mainnet,
   polygon,
@@ -25,7 +25,7 @@ import {
 
 import './App.css'
 
-const contractAddress = '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0';
+const contractAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
@@ -35,10 +35,39 @@ const config = getDefaultConfig({
 });
 const queryClient = new QueryClient();
 
+
+
 function TransactForm() {
   const {status, data: hash, error, writeContract } = useWriteContract();
   const [nftAddress, setNftAddress] = useState('');
   const [nftId, setNftId] = useState(0);
+  const [receivedAddress, setReceivedAddress] = useState(null);
+  const [receivedId, setReceivedId] = useState(0);
+
+  useEffect(() => {
+    const unwatch = watchContractEvent(config, {
+      address: contractAddress,
+      abi,
+      eventName: 'gift',
+      onLogs(logs) {
+        console.log('Log', logs);
+        console.log('whodunit?', getAccount(config));
+        console.log(logs.length);
+        for (const log of logs) {
+          console.log('Processing',log);
+          const args = log.args;
+          if (args.who === getAccount(config).address) {
+            console.log('Is user!');
+            setReceivedAddress(args.what);
+            setReceivedId(args.id);
+            console.log(receivedId);
+          } else {
+            console.log('Not user:',args.who);
+          }
+        }
+      }
+    });
+  });
 
   async function submitApproval(e) {
     e.preventDefault();
@@ -62,7 +91,7 @@ function TransactForm() {
     });
   }
 
-  return (
+return (
     <>
     <form>
       NFT contract address:
@@ -72,7 +101,7 @@ function TransactForm() {
       <button onClick={execute} id="execute" type="submit">Trade</button>
     </form>
     {status} {error && String(error)}
-    {hash && <div>Transaction hash: {hash}</div>}
+    {receivedAddress && <div>Received NFT! Contract: {receivedAddress} ID: {String(receivedId)}</div>}
     </>);
 }
 
