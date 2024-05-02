@@ -25,7 +25,7 @@ import {
 
 import './App.css'
 
-const contractAddress = '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
+const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync Sepolia address
 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
