@@ -16,6 +16,7 @@ import {
   linea,
   base,
   zkSync,
+  zkSyncSepoliaTestnet,
   localhost
 } from 'wagmi/chains';
 import {
@@ -30,7 +31,7 @@ const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, base, linea, zkSync, localhost],
+  chains: [mainnet, polygon, optimism, base, linea, zkSync, zkSyncSepoliaTestnet, localhost],
   ssr: false
 });
 const queryClient = new QueryClient();
