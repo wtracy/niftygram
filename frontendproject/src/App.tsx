@@ -23,6 +23,7 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
+import {GoldRushProvider} from 'goldrush-kit';
 
 import './App.css'
 

@@ -5,6 +5,10 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "paths": {
+      "goldrush-kit": ["../../../../goldrush-kit/src"],
+      "goldrush-kit/*": ["../../../../goldrush-kit/src/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
