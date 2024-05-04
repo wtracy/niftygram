@@ -23,7 +23,7 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
-import {GoldRushProvider} from 'goldrush-kit';
+import {GoldRushProvider} from '../../../goldrush-kit/src';
 
 import './App.css'
 
@@ -93,8 +93,10 @@ function TransactForm() {
     });
   }
 
+// <GoldRushProvider apikey={import.meta.env.COVALENT_KEY}><NFTWalletTokenListView /></GoldRushProvider>
 return (
     <>
+    <GoldRushProvider apikey={import.meta.env.COVALENT_KEY}></GoldRushProvider>
     <form>
       NFT contract address:
       <input name="contract" type="text" minLength="3" maxLength="42" size="44" value={nftAddress} onChange={e=>{setNftAddress(e.target.value)}} />
