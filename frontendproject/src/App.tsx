@@ -8,7 +8,7 @@ import {
   ConnectButton
 } from '@rainbow-me/rainbowkit';
 import {WagmiProvider, useWriteContract} from 'wagmi';
-import {getAccount, watchContractEvent} from '@wagmi/core';
+import {getAccount, watchContractEvent, getChainId} from '@wagmi/core';
 import {
   mainnet,
   polygon,
@@ -23,9 +23,8 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
-import {GoldRushProvider} from '@covalenthq/goldrush-kit';
-
-import './App.css'
+import {GoldRushProvider, NFTWalletTokenListView} from '@covalenthq/goldrush-kit';
+import "@covalenthq/goldrush-kit/styles.css";
 
 const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync Sepolia address
 
@@ -93,10 +92,11 @@ function TransactForm() {
     });
   }
 
-// <GoldRushProvider apikey={import.meta.env.COVALENT_KEY}><NFTWalletTokenListView /></GoldRushProvider>
 return (
-    <>
-    <GoldRushProvider apikey={import.meta.env.COVALENT_KEY}></GoldRushProvider>
+    <div>
+    <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
+      <NFTWalletTokenListView address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} />
+    </GoldRushProvider>
     <form>
       NFT contract address:
       <input name="contract" type="text" minLength="3" maxLength="42" size="44" value={nftAddress} onChange={e=>{setNftAddress(e.target.value)}} />
@@ -106,7 +106,7 @@ return (
     </form>
     {status} {error && String(error)}
     {receivedAddress && <div>Received NFT! Contract: {receivedAddress} ID: {String(receivedId)}</div>}
-    </>);
+    </div>);
 }
 
 function App() {
