@@ -7,9 +7,6 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      entries: {
-        "goldrush-kit": resolve(__dirname, '../../../../goldrush-kit/src')
-      }
     }
   }
 })
