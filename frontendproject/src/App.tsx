@@ -51,19 +51,11 @@ function TransactForm() {
       abi,
       eventName: 'gift',
       onLogs(logs) {
-        console.log('Log', logs);
-        console.log('whodunit?', getAccount(config));
-        console.log(logs.length);
         for (const log of logs) {
-          console.log('Processing',log);
           const args = log.args;
           if (args.who === getAccount(config).address) {
-            console.log('Is user!');
             setReceivedAddress(args.what);
             setReceivedId(args.id);
-            console.log(receivedId);
-          } else {
-            console.log('Not user:',args.who);
           }
         }
       }
@@ -121,8 +113,8 @@ function App() {
       <QueryClientProvider client={queryClient}>
       <RainbowKitProvider>
       <ConnectButton />
-      <TransactForm />
       </RainbowKitProvider>
+      <TransactForm />
       </QueryClientProvider>
       </WagmiProvider>
     </>
