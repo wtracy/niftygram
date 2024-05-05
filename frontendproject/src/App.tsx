@@ -23,7 +23,7 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
-import {GoldRushProvider, NFTWalletTokenListView} from '@covalenthq/goldrush-kit';
+import {GoldRushProvider, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
 const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync Sepolia address
@@ -87,7 +87,7 @@ function TransactForm() {
 return (
     <div>
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
-      <NFTWalletTokenListView address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} />
+      <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={(i, j)=>{console.log(i.contract_address, j.token_id);}} />
     </GoldRushProvider>
     <form>
       NFT contract address:
@@ -112,7 +112,7 @@ function App() {
       <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
       <RainbowKitProvider>
-      <ConnectButton />
+      <ConnectButton /><br />
       </RainbowKitProvider>
       <TransactForm />
       </QueryClientProvider>
