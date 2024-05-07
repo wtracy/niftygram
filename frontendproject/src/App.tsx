@@ -85,7 +85,7 @@ function TransactForm() {
     });
   }
 
-return (
+  return (
     <div>
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
       <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={(i, j)=>{console.log(i.contract_address, j.token_id);}} />
@@ -103,7 +103,6 @@ return (
 }
 
 function App() {
-
   return (
     <>
       <WagmiProvider config={config}>
