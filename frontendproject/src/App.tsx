@@ -26,7 +26,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
-import {GoldRushProvider, NFTPicker} from '@covalenthq/goldrush-kit';
+import {GoldRushProvider, NFTDetailView, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
 const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync Sepolia address
@@ -85,10 +85,20 @@ function TransactForm() {
     });
   }
 
+  function selectNFT(collection, token) {
+    setNftAddress(collection.contract_address);
+    setNftId(token.token_id);
+  }
+
   return (
     <div>
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
-      <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={(i, j)=>{console.log(i.contract_address, j.token_id);}} />
+    {
+    (nftAddress === '') ?
+        <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={selectNFT} />
+    :
+        <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={nftAddress} token_id={nftId} />
+    }
     </GoldRushProvider>
     <form>
       NFT contract address:
@@ -99,7 +109,8 @@ function TransactForm() {
     </form>
     {status} {error && String(error)}
     {receivedAddress && <div>Received NFT! Contract: {receivedAddress} ID: {String(receivedId)}</div>}
-    </div>);
+    </div>
+  );
 }
 
 function App() {
