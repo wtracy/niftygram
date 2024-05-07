@@ -7,6 +7,7 @@ import {
   RainbowKitProvider,
   ConnectButton
 } from '@rainbow-me/rainbowkit';
+
 import {WagmiProvider, useWriteContract} from 'wagmi';
 import {getAccount, watchContractEvent, getChainId} from '@wagmi/core';
 import {
@@ -19,10 +20,12 @@ import {
   zkSyncSepoliaTestnet,
   localhost
 } from 'wagmi/chains';
+
 import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
+
 import {GoldRushProvider, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
@@ -35,8 +38,6 @@ const config = getDefaultConfig({
   ssr: false
 });
 const queryClient = new QueryClient();
-
-
 
 function TransactForm() {
   const {status, data: hash, error, writeContract } = useWriteContract();
@@ -102,10 +103,6 @@ return (
 }
 
 function App() {
-  // Select NFT
-  // Execute
-  // Wait
-  // Show received NFT
 
   return (
     <>
