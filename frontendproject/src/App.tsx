@@ -46,17 +46,13 @@ function TransactForm() {
   const [receivedId, setReceivedId] = useState(0);
   const [swapStarted, setSwapStarted] = useState(false);
 
-  function restart(a, b) {
-    console.log('a thing happened');
-    console.log(a, b);
-    /*setNftAddress(null);
-    setReceivedAddress(null);*/
+  function transactionFailed(a, b) {
     setSwapStarted(false);
   }
 
   // TODO: usePrepareContractWrite
   const {status, data: hash, error, writeContract } = useWriteContract(
-      {mutation: {onError: restart}});
+      {mutation: {onError: transactionFailed}});
 
   useEffect(() => {
     const unwatch = watchContractEvent(config, {
