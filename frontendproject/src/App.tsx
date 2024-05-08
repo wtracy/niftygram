@@ -44,12 +44,14 @@ function TransactForm() {
   const [nftId, setNftId] = useState(0);
   const [receivedAddress, setReceivedAddress] = useState(null);
   const [receivedId, setReceivedId] = useState(0);
+  const [swapStarted, setSwapStarted] = useState(false);
 
   function restart(a, b) {
     console.log('a thing happened');
     console.log(a, b);
     /*setNftAddress(null);
     setReceivedAddress(null);*/
+    setSwapStarted(false);
   }
 
   // TODO: usePrepareContractWrite
@@ -67,6 +69,7 @@ function TransactForm() {
           if (args.who === getAccount(config).address) {
             setReceivedAddress(args.what);
             setReceivedId(args.id);
+            setSwapStarted(false);
           }
         }
       }
@@ -82,6 +85,7 @@ function TransactForm() {
         functionName: 'setApprovalForAll',
         args: [contractAddress, true]
     });
+    setSwapStarted(false);
   }
 
   async function execute(e) {
@@ -93,6 +97,7 @@ function TransactForm() {
       functionName: 'swap',
       args: [nftAddress, nftId]
     });
+    setSwapStarted(true);
   }
 
 
@@ -111,18 +116,18 @@ function TransactForm() {
       (receivedAddress == null) ? 
       <>
         <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={nftAddress} token_id={nftId} />
-        {//(status == ) ? <div>Unwrapping NFT!</div>:
-        <form>
-          <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button>
-          <button onClick={execute} id="execute" type="submit">Trade</button>
-        </form>
+        {
+          (swapStarted)?((status==='pending')?<div>Swap pending.</div>:<div>Unwrapping NFT...</div>):
+          <form>
+            <button onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button>
+            <button onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button>
+          </form>
         }
       </>
       :
       <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={receivedAddress} token_id={receivedId} />
     }
     </GoldRushProvider>
-    {status} 
     </div>
   );
 }
