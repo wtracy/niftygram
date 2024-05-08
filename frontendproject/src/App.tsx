@@ -40,11 +40,21 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 function TransactForm() {
-  const {status, data: hash, error, writeContract } = useWriteContract();
-  const [nftAddress, setNftAddress] = useState('');
+  const [nftAddress, setNftAddress] = useState(null);
   const [nftId, setNftId] = useState(0);
   const [receivedAddress, setReceivedAddress] = useState(null);
   const [receivedId, setReceivedId] = useState(0);
+
+  function restart(a, b) {
+    console.log('a thing happened');
+    console.log(a, b);
+    /*setNftAddress(null);
+    setReceivedAddress(null);*/
+  }
+
+  // TODO: usePrepareContractWrite
+  const {status, data: hash, error, writeContract } = useWriteContract(
+      {mutation: {onError: restart}});
 
   useEffect(() => {
     const unwatch = watchContractEvent(config, {
@@ -85,29 +95,34 @@ function TransactForm() {
     });
   }
 
+
   function selectNFT(collection, token) {
     setNftAddress(collection.contract_address);
     setNftId(token.token_id);
   }
 
   return (
-    <div>
+    <div>{error && String(error)}
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
-    (nftAddress === '') ?
+    (nftAddress == null) ?
         <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={selectNFT} />
     :
+      (receivedAddress == null) ? 
       <>
         <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={nftAddress} token_id={nftId} />
+        {//(status == ) ? <div>Unwrapping NFT!</div>:
         <form>
           <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button>
           <button onClick={execute} id="execute" type="submit">Trade</button>
         </form>
+        }
       </>
+      :
+      <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={receivedAddress} token_id={receivedId} />
     }
     </GoldRushProvider>
-    {status} {error && String(error)}
-    {receivedAddress && <div>Received NFT! Contract: {receivedAddress} ID: {String(receivedId)}</div>}
+    {status} 
     </div>
   );
 }
