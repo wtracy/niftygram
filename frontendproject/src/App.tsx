@@ -97,16 +97,15 @@ function TransactForm() {
     (nftAddress === '') ?
         <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={selectNFT} />
     :
+      <>
         <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={nftAddress} token_id={nftId} />
+        <form>
+          <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button>
+          <button onClick={execute} id="execute" type="submit">Trade</button>
+        </form>
+      </>
     }
     </GoldRushProvider>
-    <form>
-      NFT contract address:
-      <input name="contract" type="text" minLength="3" maxLength="42" size="44" value={nftAddress} onChange={e=>{setNftAddress(e.target.value)}} />
-      <button onClick={submitApproval} id="approve" type="submit">Approve transaction</button><br />
-      NFT ID: <input type="number" id="nftid" min="0" value={nftId} onChange={e=>{setNftId(e.target.value)}} />
-      <button onClick={execute} id="execute" type="submit">Trade</button>
-    </form>
     {status} {error && String(error)}
     {receivedAddress && <div>Received NFT! Contract: {receivedAddress} ID: {String(receivedId)}</div>}
     </div>
