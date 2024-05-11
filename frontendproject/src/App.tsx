@@ -29,8 +29,6 @@ import {
 import {GoldRushProvider, NFTDetailView, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
-const contractAddress = '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'; // zkSync Sepolia address
-
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
@@ -38,6 +36,13 @@ const config = getDefaultConfig({
   ssr: false
 });
 const queryClient = new QueryClient();
+
+const chainLookup = {
+  300: {
+    name: 'zksync-sepolia-testnet',
+    address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'
+  }
+};
 
 function TransactForm() {
   const [nftAddress, setNftAddress] = useState(null);
@@ -56,7 +61,7 @@ function TransactForm() {
 
   useEffect(() => {
     const unwatch = watchContractEvent(config, {
-      address: contractAddress,
+      address: chainLookup[getChainId(config)].address,
       abi,
       eventName: 'gift',
       onLogs(logs) {
@@ -79,7 +84,7 @@ function TransactForm() {
         address: nftAddress,
         abi,
         functionName: 'setApprovalForAll',
-        args: [contractAddress, true]
+        args: [chainLookup[getChainId(config)].address, true]
     });
     setSwapStarted(false);
   }
@@ -88,7 +93,7 @@ function TransactForm() {
     e.preventDefault();
 
     writeContract({
-      address: contractAddress,
+      address: chainLookup[getChainId(config)].address,
       abi,
       functionName: 'swap',
       args: [nftAddress, nftId]
@@ -107,11 +112,11 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <NFTPicker address={getAccount(config).address} chain_names={['zksync-sepolia-testnet']} on_nft_click={selectNFT} />
+        <NFTPicker address={getAccount(config).address} chain_names={[chainLookup[getChainId(config)].name]} on_nft_click={selectNFT} />
     :
       (receivedAddress == null) ? 
       <>
-        <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={nftAddress} token_id={nftId} />
+        <NFTDetailView chain_name={chainLookup[getChainId(config)].name} collection_address={nftAddress} token_id={nftId} />
         {
           (swapStarted)?((status==='pending')?<div>Swap pending.</div>:<div>Unwrapping NFT...</div>):
           <form>
@@ -121,7 +126,7 @@ function TransactForm() {
         }
       </>
       :
-      <NFTDetailView chain_name='zksync-sepolia-testnet' collection_address={receivedAddress} token_id={receivedId} />
+      <NFTDetailView chain_name={chainLookup[getChainId(config)].name} collection_address={receivedAddress} token_id={receivedId} />
     }
     </GoldRushProvider>
     </div>
