@@ -55,13 +55,17 @@ function TransactForm() {
     setSwapStarted(false);
   }
 
+  function doChainLookup() {
+    return chainLookup[getChainId(config)];
+  }
+
   // TODO: usePrepareContractWrite
   const {status, data: hash, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
 
   useEffect(() => {
     const unwatch = watchContractEvent(config, {
-      address: chainLookup[getChainId(config)].address,
+      address: doChainLookup().address,
       abi,
       eventName: 'gift',
       onLogs(logs) {
@@ -84,7 +88,7 @@ function TransactForm() {
         address: nftAddress,
         abi,
         functionName: 'setApprovalForAll',
-        args: [chainLookup[getChainId(config)].address, true]
+        args: [doChainLookup().address, true]
     });
     setSwapStarted(false);
   }
@@ -93,7 +97,7 @@ function TransactForm() {
     e.preventDefault();
 
     writeContract({
-      address: chainLookup[getChainId(config)].address,
+      address: doChainLookup().address,
       abi,
       functionName: 'swap',
       args: [nftAddress, nftId]
@@ -112,13 +116,13 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <NFTPicker address={getAccount(config).address} chain_names={[chainLookup[getChainId(config)].name]} on_nft_click={selectNFT} />
+        <NFTPicker address={getAccount(config).address} chain_names={[doChainLookup().name]} on_nft_click={selectNFT} />
     :
       (receivedAddress == null) ? 
       <>
-        <NFTDetailView chain_name={chainLookup[getChainId(config)].name} collection_address={nftAddress} token_id={nftId} />
+        <NFTDetailView chain_name={doChainLookup().name} collection_address={nftAddress} token_id={nftId} />
         {
-          (swapStarted)?((status==='pending')?<div>Swap pending.</div>:<div>Unwrapping NFT...</div>):
+          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
           <form>
             <button onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button>
             <button onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button>
@@ -126,7 +130,7 @@ function TransactForm() {
         }
       </>
       :
-      <NFTDetailView chain_name={chainLookup[getChainId(config)].name} collection_address={receivedAddress} token_id={receivedId} />
+      <NFTDetailView chain_name={doChainLookup().name} collection_address={receivedAddress} token_id={receivedId} />
     }
     </GoldRushProvider>
     </div>
