@@ -3,7 +3,7 @@ import { getWallet } from "./utils";
 import { ethers } from "ethers";
 
 // Address of the contract to interact with
-const CONTRACT_ADDRESS = "0x63c7dB0A8c67F2dd332E99dAF6f9dd8968838Ed9";
+const CONTRACT_ADDRESS = "0x684f6198a91df930da7f079749e20448ce9d4d1c";
 if (!CONTRACT_ADDRESS) throw "⛔️ Provide address of the contract to interact with!";
 
 // An example of a script to interact with the contract
@@ -23,6 +23,6 @@ export default async function () {
 
   // Run contract read function
   console.log(wallet.address);
-  const response = await contract.mint(wallet.address);
+  const response = await contract.safeTransferFrom(wallet.address, '0x633c38E744F6A1F39cf12DeaD8fEEf368A6Aa255', 197);
   console.log(`Current message is: ${response}`);
 }
