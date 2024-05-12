@@ -41,6 +41,10 @@ const chainLookup = {
   300: {
     name: 'zksync-sepolia-testnet',
     address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'
+  },
+  59144: {
+    name: 'linea-mainnet',
+    address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b'
   }
 };
 
