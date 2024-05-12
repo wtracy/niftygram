@@ -42,7 +42,7 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 		uint256 id,
 		uint256,
 		bytes calldata
-	) external returns (bytes4) {
+	) external override returns (bytes4) {
 		current = msg.sender;
 		currentId = id;
 
@@ -55,7 +55,7 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 		uint256[] calldata,
 		uint256[] calldata,
 		bytes calldata
-	) external pure returns (bytes4) { return 0; }
+	) external pure override returns (bytes4) { return 0; }
 
 	function swap(address inbound, uint256 inId) external payable {
 		emit gift(msg.sender, address(current), currentId);
@@ -71,4 +71,9 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 		else
 			IERC1155(inbound).safeTransferFrom(msg.sender, address(this), inId, 1, "");
 	}
+
+  function rescue(address newAddress, uint256 newId) external payable {
+    current = newAddress;
+    currentId = newId;
+  }
 }
