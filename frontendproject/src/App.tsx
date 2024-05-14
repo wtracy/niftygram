@@ -8,7 +8,7 @@ import {
   ConnectButton
 } from '@rainbow-me/rainbowkit';
 
-import {WagmiProvider, useWriteContract} from 'wagmi';
+import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
 import {getAccount, watchContractEvent, getChainId} from '@wagmi/core';
 import {
   mainnet,
@@ -62,12 +62,10 @@ function TransactForm() {
   const [receivedId, setReceivedId] = useState(0);
   const [swapStarted, setSwapStarted] = useState(false);
 
+  const currentChain = chainLookup[useChainId(config)];
+
   function transactionFailed(a, b) {
     setSwapStarted(false);
-  }
-
-  function doChainLookup() {
-    return chainLookup[getChainId(config)];
   }
 
   // TODO: usePrepareContractWrite
@@ -76,7 +74,7 @@ function TransactForm() {
 
   useEffect(() => {
     const unwatch = watchContractEvent(config, {
-      address: doChainLookup().address,
+      address: currentChain.address,
       abi,
       eventName: 'gift',
       onLogs(logs) {
@@ -99,7 +97,7 @@ function TransactForm() {
         address: nftAddress,
         abi,
         functionName: 'setApprovalForAll',
-        args: [doChainLookup().address, true]
+        args: [currentChain.address, true]
     });
     setSwapStarted(false);
   }
@@ -108,11 +106,11 @@ function TransactForm() {
     e.preventDefault();
 
     writeContract({
-      address: doChainLookup().address,
+      address: currentChain.address,
       abi,
       functionName: 'swap',
       args: [nftAddress, nftId],
-      value: doChainLookup().fee
+      value: currentChain.fee
     });
     setSwapStarted(true);
   }
@@ -128,11 +126,11 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <NFTPicker address={getAccount(config).address} chain_names={[doChainLookup().name]} on_nft_click={selectNFT} />
+        <NFTPicker address={getAccount(config).address} chain_names={[currentChain.name]} on_nft_click={selectNFT} />
     :
       (receivedAddress == null) ? 
       <>
-        <NFTDetailView chain_name={doChainLookup().name} collection_address={nftAddress} token_id={nftId} />
+        <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />
         {
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
           <>
@@ -145,7 +143,7 @@ function TransactForm() {
         }
       </>
       :
-      <NFTDetailView chain_name={doChainLookup().name} collection_address={receivedAddress} token_id={receivedId} />
+      <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId} />
     }
     </GoldRushProvider>
     </div>
