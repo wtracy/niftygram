@@ -40,15 +40,18 @@ const queryClient = new QueryClient();
 const chainLookup = {
   300: {
     name: 'zksync-sepolia-testnet',
-    address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316'
+    address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316',
+    fee: 0
   },
   324: {
     name: 'zksync-mainnet',
-    address: '0x633c38E744F6A1F39cf12DeaD8fEEf368A6Aa255'
+    address: '0x633c38E744F6A1F39cf12DeaD8fEEf368A6Aa255',
+    fee: 0
   },
   59144: {
     name: 'linea-mainnet',
-    address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b'
+    address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b',
+    fee: 0
   }
 };
 
@@ -108,7 +111,8 @@ function TransactForm() {
       address: doChainLookup().address,
       abi,
       functionName: 'swap',
-      args: [nftAddress, nftId]
+      args: [nftAddress, nftId],
+      value: doChainLookup().fee
     });
     setSwapStarted(true);
   }
