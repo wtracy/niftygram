@@ -8,7 +8,7 @@ import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Hol
 import "lib/@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-import {Exchange} from "../src/Exchange.sol";
+import {Exchange, PaymentTooLow} from "../src/Exchange.sol";
 
 contract ExchangeTest is Test, ERC721Holder, ERC1155Holder {
 	Exchange ex;
@@ -23,6 +23,8 @@ contract ExchangeTest is Test, ERC721Holder, ERC1155Holder {
 		mock.mint(address(this));
 		mock1155 = new Mock1155();
 	}
+
+  receive() external payable {}
 
 	function test_multiple721swaps() public {
 		mock.safeTransferFrom(address(this), address(ex), 1);
@@ -53,6 +55,38 @@ contract ExchangeTest is Test, ERC721Holder, ERC1155Holder {
 		assertEq(mock1155.balanceOf(address(ex), 1), 0);
 		assertEq(address(ex), mock.ownerOf(1));
 	}
+
+  function test_SwapFees() public {
+    uint256 gw = 1 gwei;
+
+		mock.safeTransferFrom(address(this), address(ex), 1);
+		assertEq(address(ex), mock.ownerOf(1));
+
+    ex.setFee(gw);
+    mock.approve(address(ex), 2);
+
+    vm.expectRevert(abi.encodeWithSelector(PaymentTooLow.selector, gw));
+    ex.swap{value: 0}(address(mock), 2);
+
+    vm.expectRevert(abi.encodeWithSelector(PaymentTooLow.selector, gw));
+    ex.swap{value: 0.5 gwei}(address(mock), 2);
+
+    ex.swap{value: 1 gwei}(address(mock), 2);
+		assertEq(address(ex), mock.ownerOf(2));
+		assertEq(address(this), mock.ownerOf(1));
+
+    assertEq(address(ex).balance, 1 gwei);
+    (bool success,) = ex.collect();
+    assertTrue(success);
+    assertEq(address(ex).balance, 0);
+
+    ex.setFee(0.5 gwei);
+    mock.approve(address(ex), 1);
+
+    ex.swap{value: 0.5 gwei}(address(mock), 1);
+		assertEq(address(ex), mock.ownerOf(1));
+		assertEq(address(this), mock.ownerOf(2));
+  }
 }
 
 contract Mock1155 is ERC1155 {

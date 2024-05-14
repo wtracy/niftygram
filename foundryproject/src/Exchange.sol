@@ -9,9 +9,11 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Receiver.sol";
 
-error NotNFT();
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Exchange is IERC721Receiver, ERC1155Receiver 
+error PaymentTooLow(uint256 expected);
+
+contract Exchange is IERC721Receiver, ERC1155Receiver, Ownable
 {
 	event gift(
 		address indexed who,
@@ -23,6 +25,8 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 
 	address current;
 	uint256 currentId;
+
+  uint256 fee;
 
 	function onERC721Received(
 		address,
@@ -58,6 +62,9 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 	) external override pure returns (bytes4) { return 0; }
 
 	function swap(address inbound, uint256 inId) external payable {
+    if (msg.value < fee)
+      revert PaymentTooLow(fee);
+
 		emit gift(msg.sender, address(current), currentId);
 
 		if (IERC165(current).supportsInterface(erc721id))
@@ -71,4 +78,12 @@ contract Exchange is IERC721Receiver, ERC1155Receiver
 		else
 			IERC1155(inbound).safeTransferFrom(msg.sender, address(this), inId, 1, "");
 	}
+
+  function collect() external payable onlyOwner returns(bool, bytes memory) {
+    return owner().call{value: address(this).balance}("");
+  }
+
+  function setFee(uint256 newFee) external payable onlyOwner {
+    fee = newFee;
+  }
 }
