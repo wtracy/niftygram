@@ -131,10 +131,13 @@ function TransactForm() {
         <NFTDetailView chain_name={doChainLookup().name} collection_address={nftAddress} token_id={nftId} />
         {
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
+          <>
           <form>
             <button onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button>
             <button onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button>
           </form>
+          {(status==='pending')&&<div>Submitting approval...</div>}
+          </> 
         }
       </>
       :
