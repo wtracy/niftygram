@@ -48,11 +48,16 @@ const chainLookup = {
     address: '0x633c38E744F6A1F39cf12DeaD8fEEf368A6Aa255',
     fee: 0
   },
+  59141: {
+    name: 'linea-sepolia-testnet',
+    address: '0xCAa02a3e6642554be7cCD5576C7CE4561a1E5A49',
+    fee: 0
+  },
   59144: {
     name: 'linea-mainnet',
     address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b',
     fee: 0
-  }
+  },
 };
 
 function TransactForm() {
@@ -135,15 +140,18 @@ function TransactForm() {
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
           <>
           <form>
-            <button onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button>
-            <button onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button>
+            <button class="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button>
+            <button class="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button>
           </form>
           {(status==='pending')&&<div>Submitting approval...</div>}
           </> 
         }
       </>
       :
+      <>
+      <div>You received:</div>
       <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId} />
+      </>
     }
     </GoldRushProvider>
     </div>
