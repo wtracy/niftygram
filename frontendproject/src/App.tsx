@@ -15,7 +15,9 @@ import {
   polygon,
   optimism,
   linea,
+  lineaSepolia,
   base,
+  baseSepolia,
   zkSync,
   zkSyncSepoliaTestnet,
   localhost
@@ -32,7 +34,7 @@ import "@covalenthq/goldrush-kit/styles.css";
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, base, linea, zkSync, zkSyncSepoliaTestnet, localhost],
+  chains: [mainnet, polygon, optimism, base, baseSepolia, linea, zkSync, zkSyncSepoliaTestnet, localhost],
   ssr: false
 });
 const queryClient = new QueryClient();
@@ -58,6 +60,11 @@ const chainLookup = {
     address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b',
     fee: 0
   },
+  84532: {
+    name: 'base-sepolia-testnet',
+    address: '0xCAa02a3e6642554be7cCD5576C7CE4561a1E5A49',
+    fee: 10000000000000
+  }
 };
 
 function TransactForm() {
