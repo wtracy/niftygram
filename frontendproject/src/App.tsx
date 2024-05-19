@@ -40,6 +40,11 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 const chainLookup = {
+  137: {
+    name: 'matic-mainnet',
+    address: '0x6D4753aD181D67Bd0a26E044d6D8c72Bf953ca61',
+    fee: 0
+  },
   300: {
     name: 'zksync-sepolia-testnet',
     address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316',
@@ -64,6 +69,11 @@ const chainLookup = {
     name: 'base-sepolia-testnet',
     address: '0xCAa02a3e6642554be7cCD5576C7CE4561a1E5A49',
     fee: 10000000000000
+  },
+  8453: {
+    name: 'base-mainnet',
+    address: '0x6E8a2f205516E94cB18c5B8791F055d289A52f91',
+    fee: 0
   }
 };
 
