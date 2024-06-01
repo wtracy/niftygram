@@ -144,14 +144,14 @@ function TransactForm() {
   }
 
   return (
-    <div>{error && String(error)}
+    <div class="flex justify-center"><div>{error && String(error)}</div>
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <NFTPicker address={getAccount(config).address} chain_names={[currentChain.name]} on_nft_click={selectNFT} />
+        <div class="p-5"><NFTPicker address={getAccount(config).address} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
-      <>
+      <div class="p-2">
         <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />
         {
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
@@ -163,7 +163,7 @@ function TransactForm() {
           {(status==='pending')&&<div>Submitting approval...</div>}
           </> 
         }
-      </>
+      </div>
       :
       <>
       <div>You received:</div>
@@ -180,9 +180,11 @@ function App() {
     <>
       <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
+      <div class="flex p-2 w-screen justify-end">
       <RainbowKitProvider>
-      <ConnectButton /><br />
+      <ConnectButton />
       </RainbowKitProvider>
+      </div>
       <TransactForm />
       </QueryClientProvider>
       </WagmiProvider>
