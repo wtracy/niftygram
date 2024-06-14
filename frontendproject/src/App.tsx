@@ -145,7 +145,9 @@ function TransactForm() {
   }
 
   return (
-    <div class="flex justify-center"><div>{error && String(error)}</div>
+  <>
+    <div>{error && String(error)}</div>
+    <div class="flex justify-center">
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
@@ -155,7 +157,8 @@ function TransactForm() {
       <div class="p-2">
         <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />
         {
-          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>):
+          // TODO: Hide old NFT when unwrapping starts
+          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img src="busy.gif"/><br/>Unwrapping NFT...</div>):
           <>
           <form>
           <div class="p-2 flex justify-around">
@@ -168,13 +171,14 @@ function TransactForm() {
         }
       </div>
       :
-      <>
+      <div class="flex justify-center">
       <div>You received:</div>
       <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId} />
-      </>
+      </div>
     }
     </GoldRushProvider>
     </div>
+  </>
   );
 }
 
