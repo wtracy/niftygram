@@ -154,11 +154,12 @@ function TransactForm() {
         <div class="p-5"><NFTPicker address={getAccount(config).address} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
+
       <div class="p-2">
-        <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />
+        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />}
         {
           // TODO: Hide old NFT when unwrapping starts
-          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img src="busy.gif"/><br/>Unwrapping NFT...</div>):
+          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img class="w-1/2 object-scale-down" src="busy.gif"/><br/>Unwrapping NFT...</div>):
           <>
           <form>
           <div class="p-2 flex justify-around">
@@ -170,9 +171,10 @@ function TransactForm() {
           </> 
         }
       </div>
+
       :
       <div class="flex justify-center">
-      <div>You received:</div>
+      <div class="p-5">You received:</div>
       <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId} />
       </div>
     }
