@@ -92,6 +92,7 @@ function TransactForm() {
 
   // TODO: usePrepareContractWrite
   // TODO: push browser history
+  // TODO: respond to chain change
   const {status, data: hash, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
 
