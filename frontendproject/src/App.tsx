@@ -9,13 +9,13 @@ import {
 } from '@rainbow-me/rainbowkit';
 
 import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
-import {getAccount, watchContractEvent, getChainId} from '@wagmi/core';
+import {getAccount, watchContractEvent/*, getChainId*/} from '@wagmi/core';
 import {
-  mainnet,
+  //mainnet,
   polygon,
   optimism,
   linea,
-  lineaSepolia,
+  //lineaSepolia,
   base,
   baseSepolia,
   zkSync,
@@ -34,7 +34,7 @@ import "@covalenthq/goldrush-kit/styles.css";
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
   projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet, polygon, optimism, base, baseSepolia, linea, zkSync, zkSyncSepoliaTestnet, localhost],
+  chains: [/*mainnet, */polygon, optimism, base, baseSepolia, linea, zkSync, zkSyncSepoliaTestnet, localhost],
   ssr: false
 });
 const queryClient = new QueryClient();
@@ -84,20 +84,21 @@ function TransactForm() {
   const [receivedId, setReceivedId] = useState(0);
   const [swapStarted, setSwapStarted] = useState(false);
 
-  const currentChain = chainLookup[useChainId(config)];
+  const chainId = useChainId();
+  const currentChain = chainLookup[chainId];
 
-  function transactionFailed(a, b) {
+  function transactionFailed({}, {}) {
     setSwapStarted(false);
   }
 
   // TODO: usePrepareContractWrite
   // TODO: push browser history
   // TODO: respond to chain change
-  const {status, data: hash, error, writeContract } = useWriteContract(
+  const {status, data: _, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
 
   useEffect(() => {
-    const unwatch = watchContractEvent(config, {
+    /*const unwatch =*/ watchContractEvent(config, {
       address: currentChain.address,
       abi,
       eventName: 'gift',
@@ -114,7 +115,7 @@ function TransactForm() {
     });
   });
 
-  async function submitApproval(e) {
+  async function submitApproval(e:any) {
     e.preventDefault();
 
     writeContract({
@@ -126,7 +127,7 @@ function TransactForm() {
     setSwapStarted(false);
   }
 
-  async function execute(e) {
+  async function execute(e:any) {
     e.preventDefault();
 
     writeContract({
@@ -140,7 +141,7 @@ function TransactForm() {
   }
 
 
-  function selectNFT(collection, token) {
+  function selectNFT(collection:any, token:any) {
     setNftAddress(collection.contract_address);
     setNftId(token.token_id);
   }
@@ -176,7 +177,7 @@ function TransactForm() {
       :
       <div class="flex justify-center">
       <div class="p-5">You received:</div>
-      <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId} />
+      <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId.toString()} />
       </div>
     }
     </GoldRushProvider>
