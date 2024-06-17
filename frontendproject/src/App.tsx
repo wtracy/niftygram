@@ -79,7 +79,7 @@ const chainLookup = {
 
 function TransactForm() {
   const [nftAddress, setNftAddress] = useState(null);
-  const [nftId, setNftId] = useState(0);
+  const [nftId, setNftId] = useState(BigInt(0));
   const [receivedAddress, setReceivedAddress] = useState(null);
   const [receivedId, setReceivedId] = useState(0);
   const [swapStarted, setSwapStarted] = useState(false);
