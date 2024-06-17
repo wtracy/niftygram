@@ -35,6 +35,7 @@ import "@covalenthq/goldrush-kit/styles.css";
 
 const config = getDefaultConfig({
   appName: 'My RainbowKit App',
+  // TODO: make wallet connect work!!!
   projectId: 'YOUR_PROJECT_ID',
   chains: [/*mainnet, */polygon, optimism, base, baseSepolia, linea, zkSync, zkSyncSepoliaTestnet, localhost],
   ssr: false
@@ -167,7 +168,7 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <div className="p-5"><NFTPicker address={getAccount(config).address.toString()} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
+        <div className="p-5"><NFTPicker address={getAccount(config).address!.toString()} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
 
