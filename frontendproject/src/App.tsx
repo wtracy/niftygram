@@ -8,6 +8,7 @@ import {
   ConnectButton
 } from '@rainbow-me/rainbowkit';
 
+import {Address} from 'viem';
 import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
 import {getAccount, watchContractEvent/*, getChainId*/} from '@wagmi/core';
 import {
@@ -28,6 +29,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
+import {Chain} from '@covalenthq/client-sdk';
 import {GoldRushProvider, NFTDetailView, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
@@ -39,49 +41,49 @@ const config = getDefaultConfig({
 });
 const queryClient = new QueryClient();
 
-const chainLookup:{[key:number]:{address:string,name:string,fee:number}} = {
+const chainLookup:{[key:number]:{address:Address,name:Chain,fee:bigint}} = {
   137: {
     name: 'matic-mainnet',
     address: '0x6D4753aD181D67Bd0a26E044d6D8c72Bf953ca61',
-    fee: 0
+    fee: BigInt(0)
   },
   300: {
-    name: 'zksync-sepolia-testnet',
+    name: 'zksync-sepolia-testnet' as Chain,
     address: '0xc6b699D29d58Db9e9Cc687884CF5A7c4DD63D316',
-    fee: 0
+    fee: BigInt(0)
   },
   324: {
     name: 'zksync-mainnet',
     address: '0x633c38E744F6A1F39cf12DeaD8fEEf368A6Aa255',
-    fee: 0
+    fee: BigInt(0)
   },
-  59141: {
+  /*59141: {
     name: 'linea-sepolia-testnet',
     address: '0xCAa02a3e6642554be7cCD5576C7CE4561a1E5A49',
-    fee: 0
-  },
+    fee: BigInt(0)
+  },*/
   59144: {
     name: 'linea-mainnet',
     address: '0xeD1855D68C96B47210aeb2C20C7E911e26A6031b',
-    fee: 0
+    fee: BigInt(0)
   },
   84532: {
     name: 'base-sepolia-testnet',
     address: '0xCAa02a3e6642554be7cCD5576C7CE4561a1E5A49',
-    fee: 10000000000000
+    fee: BigInt(10000000000000)
   },
   8453: {
     name: 'base-mainnet',
     address: '0x6E8a2f205516E94cB18c5B8791F055d289A52f91',
-    fee: 0
+    fee: BigInt(0)
   }
 };
 
 function TransactForm() {
   const [nftAddress, setNftAddress] = useState(null);
   const [nftId, setNftId] = useState(BigInt(0));
-  const [receivedAddress, setReceivedAddress] = useState(null);
-  const [receivedId, setReceivedId] = useState(0);
+  const [receivedAddress, setReceivedAddress] = useState<Address|null>(null);
+  const [receivedId, setReceivedId] = useState<BigInt>(BigInt(0));
   const [swapStarted, setSwapStarted] = useState(false);
 
   const chainId = useChainId();
@@ -99,7 +101,7 @@ function TransactForm() {
 
   useEffect(() => {
     /* TODO: release watch: const unwatch =*/ 
-    const address:string = currentChain.address;
+    const address = currentChain.address;
     watchContractEvent(config, {
       address,
       abi,
@@ -108,8 +110,10 @@ function TransactForm() {
         for (const log of logs) {
           const args = log.args;
           if (args.who === getAccount(config).address) {
-            setReceivedAddress(args.what);
-            setReceivedId(args.id);
+            const what = args.what as Address;
+            const id = args.id as BigInt;
+            setReceivedAddress(what);
+            setReceivedId(id);
             setSwapStarted(false);
           }
         }
@@ -120,26 +124,34 @@ function TransactForm() {
   async function submitApproval(e:any) {
     e.preventDefault();
 
-    writeContract({
-        address: nftAddress,
-        abi,
-        functionName: 'setApprovalForAll',
-        args: [currentChain.address, true]
-    });
-    setSwapStarted(false);
+    if (nftAddress != null) {
+      writeContract({
+          address: nftAddress,
+          abi,
+          functionName: 'setApprovalForAll',
+          args: [currentChain.address, true]
+      });
+      setSwapStarted(false);
+    } else {
+      console.error('Cannot write to NFT contract with null address.');
+    }
   }
 
   async function execute(e:any) {
     e.preventDefault();
 
-    writeContract({
-      address: currentChain.address,
-      abi,
-      functionName: 'swap',
-      args: [nftAddress, nftId],
-      value: currentChain.fee
-    });
-    setSwapStarted(true);
+    if (nftAddress != null) {
+      writeContract({
+        address: currentChain.address,
+        abi,
+        functionName: 'swap',
+        args: [nftAddress, nftId],
+        value: currentChain.fee
+      });
+      setSwapStarted(true);
+    } else {
+      console.error('Cannot write to exchange contract with null address.');
+    }
   }
 
 
@@ -160,7 +172,7 @@ function TransactForm() {
       (receivedAddress == null) ? 
 
       <div className="p-2">
-        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />}
+        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId.toString()} />}
         {
           // TODO: Hide old NFT when unwrapping starts
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src="busy.gif"/><br/>Unwrapping NFT...</div>):
