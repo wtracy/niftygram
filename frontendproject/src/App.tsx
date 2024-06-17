@@ -39,7 +39,7 @@ const config = getDefaultConfig({
 });
 const queryClient = new QueryClient();
 
-const chainLookup = {
+const chainLookup:{[key:number]:{address:string,name:string,fee:number}} = {
   137: {
     name: 'matic-mainnet',
     address: '0x6D4753aD181D67Bd0a26E044d6D8c72Bf953ca61',
@@ -98,8 +98,10 @@ function TransactForm() {
       {mutation: {onError: transactionFailed}});
 
   useEffect(() => {
-    /*const unwatch =*/ watchContractEvent(config, {
-      address: currentChain.address,
+    /* TODO: release watch: const unwatch =*/ 
+    const address:string = currentChain.address;
+    watchContractEvent(config, {
+      address,
       abi,
       eventName: 'gift',
       onLogs(logs) {
