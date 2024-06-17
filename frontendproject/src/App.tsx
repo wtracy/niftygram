@@ -149,24 +149,24 @@ function TransactForm() {
   return (
   <>
     <div>{error && String(error)}</div>
-    <div class="flex justify-center">
+    <div className="flex justify-center">
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <div class="p-5"><NFTPicker address={getAccount(config).address} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
+        <div className="p-5"><NFTPicker address={getAccount(config).address.toString()} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
 
-      <div class="p-2">
+      <div className="p-2">
         {(!swapStarted||status==='pending') && <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId} />}
         {
           // TODO: Hide old NFT when unwrapping starts
-          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img class="w-1/2 object-scale-down" src="busy.gif"/><br/>Unwrapping NFT...</div>):
+          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src="busy.gif"/><br/>Unwrapping NFT...</div>):
           <>
           <form>
-          <div class="p-2 flex justify-around">
-            <div><button class="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
-            <div><button class="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
+          <div className="p-2 flex justify-around">
+            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
+            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
           </div>
           </form>
           {(status==='pending')&&<div>Submitting approval...</div>}
@@ -175,8 +175,8 @@ function TransactForm() {
       </div>
 
       :
-      <div class="flex justify-center">
-      <div class="p-5">You received:</div>
+      <div className="flex justify-center">
+      <div className="p-5">You received:</div>
       <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId.toString()} />
       </div>
     }
@@ -191,7 +191,7 @@ function App() {
     <>
       <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-      <div class="flex p-2 w-screen justify-end">
+      <div className="flex p-2 w-screen justify-end">
       <RainbowKitProvider>
       <ConnectButton />
       </RainbowKitProvider>
