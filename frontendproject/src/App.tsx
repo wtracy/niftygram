@@ -18,10 +18,10 @@ import {
   linea,
   //lineaSepolia,
   base,
-  baseSepolia,
+  //baseSepolia,
   zkSync,
-  zkSyncSepoliaTestnet,
-  localhost
+  //zkSyncSepoliaTestnet,
+  //localhost
 } from 'wagmi/chains';
 
 import {
@@ -34,10 +34,10 @@ import {GoldRushProvider, NFTDetailView, NFTPicker} from '@covalenthq/goldrush-k
 import "@covalenthq/goldrush-kit/styles.css";
 
 const config = getDefaultConfig({
-  appName: 'My RainbowKit App',
+  appName: 'Niftygram',
   // TODO: make wallet connect work!!!
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [/*mainnet, */polygon, optimism, base, baseSepolia, linea, zkSync, zkSyncSepoliaTestnet, localhost],
+  projectId: '15f074c13391ad418e74f898a88f7765',
+  chains: [/*mainnet, */polygon, optimism, base, /*baseSepolia,*/ linea, zkSync, /*zkSyncSepoliaTestnet, localhost*/],
   ssr: false
 });
 const queryClient = new QueryClient();
