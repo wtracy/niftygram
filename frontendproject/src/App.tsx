@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useState} from 'react';
 import { abi } from "./abi";
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -100,28 +100,6 @@ function TransactForm() {
   const {status, data: _, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
 
-  useEffect(() => {
-    /* TODO: release watch: const unwatch =*/ 
-    const address = currentChain.address;
-    watchContractEvent(config, {
-      address,
-      abi,
-      eventName: 'gift',
-      onLogs(logs) {
-        for (const log of logs) {
-          const args = log.args;
-          if (args.who === getAccount(config).address) {
-            const what = args.what as Address;
-            const id = args.id as BigInt;
-            setReceivedAddress(what);
-            setReceivedId(id);
-            setSwapStarted(false);
-          }
-        }
-      }
-    });
-  });
-
   async function submitApproval(e:any) {
     e.preventDefault();
 
@@ -150,6 +128,25 @@ function TransactForm() {
         value: currentChain.fee
       });
       setSwapStarted(true);
+      /* TODO: release watch: const unwatch =*/ 
+      const address = currentChain.address;
+      watchContractEvent(config, {
+        address,
+        abi,
+        eventName: 'gift',
+        onLogs(logs) {
+          for (const log of logs) {
+            const args = log.args;
+            if (args.who === getAccount(config).address) {
+              const what = args.what as Address;
+              const id = args.id as BigInt;
+              setReceivedAddress(what);
+              setReceivedId(id);
+              setSwapStarted(false);
+            }
+          }
+        }
+      });
     } else {
       console.error('Cannot write to exchange contract with null address.');
     }
@@ -161,6 +158,12 @@ function TransactForm() {
     setNftId(token.token_id);
   }
 
+  var rawAddress = getAccount(config).address;
+  var userAddress = '';
+  if (rawAddress != undefined) {
+    userAddress = rawAddress.toString();
+  }
+
   return (
   <>
     <div>{error && String(error)}</div>
@@ -168,7 +171,7 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <div className="p-5"><NFTPicker address={getAccount(config).address!.toString()} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
+        <div className="p-5"><NFTPicker address={userAddress} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
 
