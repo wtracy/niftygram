@@ -5,6 +5,8 @@ import path, {resolve} from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
+    cssMinify: true,
+    minify: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
