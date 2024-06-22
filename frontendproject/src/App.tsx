@@ -186,7 +186,7 @@ function TransactForm() {
         {(!swapStarted||status==='pending') && <NFTDetailView chain_name={chainName} collection_address={nftAddress} token_id={nftId.toString()} />}
         {
           // TODO: Hide old NFT when unwrapping starts
-          (swapStarted)?((status==='pending')?<div align="center">Swap pending...</div>:<div align="center"><img className="w-1/2 object-scale-down" src={busyUrl}/><br/>Unwrapping NFT...</div>):
+          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src={busyUrl}/><br/>Unwrapping NFT...</div>):
           <>
           <form>
           <div className="p-2 flex justify-around">
