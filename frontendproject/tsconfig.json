@@ -9,6 +9,7 @@
       "goldrush-kit": ["../../../../goldrush-kit/src"],
       "goldrush-kit/*": ["../../../../goldrush-kit/src/*"]
     },
+    "types": ["vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",

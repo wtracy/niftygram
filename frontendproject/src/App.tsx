@@ -14,13 +14,13 @@ import {getAccount, watchContractEvent/*, getChainId*/} from '@wagmi/core';
 import {
   //mainnet,
   polygon,
-  optimism,
+  //optimism,
   linea,
   //lineaSepolia,
   base,
   //baseSepolia,
   zkSync,
-  //zkSyncSepoliaTestnet,
+  zkSyncSepoliaTestnet,
   //localhost
 } from 'wagmi/chains';
 
@@ -33,11 +33,13 @@ import {Chain} from '@covalenthq/client-sdk';
 import {GoldRushProvider, NFTDetailView, NFTPicker} from '@covalenthq/goldrush-kit';
 import "@covalenthq/goldrush-kit/styles.css";
 
+import busyUrl from '../busy.gif';
+
 const config = getDefaultConfig({
   appName: 'Niftygram',
   // TODO: make wallet connect work!!!
   projectId: '15f074c13391ad418e74f898a88f7765',
-  chains: [/*mainnet, */polygon, optimism, base, /*baseSepolia,*/ linea, zkSync, /*zkSyncSepoliaTestnet, localhost*/],
+  chains: [/*mainnet, */polygon, /*optimism,*/ base, /*baseSepolia,*/ linea, zkSync, zkSyncSepoliaTestnet/*, localhost*/],
   ssr: false
 });
 const queryClient = new QueryClient();
@@ -46,7 +48,7 @@ const chainLookup:{[key:number]:{address:Address,name:Chain,fee:bigint}} = {
   137: {
     name: 'matic-mainnet',
     address: '0x6D4753aD181D67Bd0a26E044d6D8c72Bf953ca61',
-    fee: BigInt(0)
+    fee: BigInt(100000000000000000)
   },
   300: {
     name: 'zksync-sepolia-testnet' as Chain,
@@ -76,7 +78,7 @@ const chainLookup:{[key:number]:{address:Address,name:Chain,fee:bigint}} = {
   8453: {
     name: 'base-mainnet',
     address: '0x6E8a2f205516E94cB18c5B8791F055d289A52f91',
-    fee: BigInt(0)
+    fee: BigInt(100000000000000)
   }
 };
 
@@ -90,7 +92,8 @@ function TransactForm() {
   const chainId = useChainId();
   const currentChain = chainLookup[chainId];
 
-  function transactionFailed({}, {}) {
+  function transactionFailed(err:any) {
+    console.error(err);
     setSwapStarted(false);
   }
 
@@ -120,14 +123,6 @@ function TransactForm() {
     e.preventDefault();
 
     if (nftAddress != null) {
-      writeContract({
-        address: currentChain.address,
-        abi,
-        functionName: 'swap',
-        args: [nftAddress, nftId],
-        value: currentChain.fee
-      });
-      setSwapStarted(true);
       /* TODO: release watch: const unwatch =*/ 
       const address = currentChain.address;
       watchContractEvent(config, {
@@ -147,6 +142,15 @@ function TransactForm() {
           }
         }
       });
+
+      writeContract({
+        address: currentChain.address,
+        abi,
+        functionName: 'swap',
+        args: [nftAddress, nftId],
+        value: currentChain.fee
+      });
+      setSwapStarted(true);
     } else {
       console.error('Cannot write to exchange contract with null address.');
     }
@@ -163,6 +167,9 @@ function TransactForm() {
   if (rawAddress != undefined) {
     userAddress = rawAddress.toString();
   }
+  var chainName:Chain = 'eth-mainnet';
+  if (currentChain != undefined)
+    chainName = currentChain.name;
 
   return (
   <>
@@ -171,15 +178,15 @@ function TransactForm() {
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
     {
     (nftAddress == null) ?
-        <div className="p-5"><NFTPicker address={userAddress} chain_names={[currentChain.name]} on_nft_click={selectNFT} /></div>
+        <div className="p-5"><NFTPicker address={userAddress} chain_names={[chainName]} on_nft_click={selectNFT} /></div>
     :
       (receivedAddress == null) ? 
 
       <div className="p-2">
-        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={currentChain.name} collection_address={nftAddress} token_id={nftId.toString()} />}
+        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={chainName} collection_address={nftAddress} token_id={nftId.toString()} />}
         {
           // TODO: Hide old NFT when unwrapping starts
-          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src="busy.gif"/><br/>Unwrapping NFT...</div>):
+          (swapStarted)?((status==='pending')?<div align="center">Swap pending...</div>:<div align="center"><img className="w-1/2 object-scale-down" src={busyUrl}/><br/>Unwrapping NFT...</div>):
           <>
           <form>
           <div className="p-2 flex justify-around">
@@ -195,7 +202,7 @@ function TransactForm() {
       :
       <div className="flex justify-center">
       <div className="p-5">You received:</div>
-      <NFTDetailView chain_name={currentChain.name} collection_address={receivedAddress} token_id={receivedId.toString()} />
+      <NFTDetailView chain_name={chainName} collection_address={receivedAddress} token_id={receivedId.toString()} />
       </div>
     }
     </GoldRushProvider>
