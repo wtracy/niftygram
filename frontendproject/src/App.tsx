@@ -10,7 +10,7 @@ import {
 
 import {Address} from 'viem';
 import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
-import {getAccount, watchContractEvent/*, getChainId*/} from '@wagmi/core';
+import {getAccount, watchContractEvent, prepareTransactionRequest} from '@wagmi/core';
 import {
   //mainnet,
   polygon,
@@ -20,7 +20,7 @@ import {
   base,
   //baseSepolia,
   zkSync,
-  zkSyncSepoliaTestnet,
+  //zkSyncSepoliaTestnet,
   //localhost
 } from 'wagmi/chains';
 
@@ -39,7 +39,7 @@ const config = getDefaultConfig({
   appName: 'Niftygram',
   // TODO: make wallet connect work!!!
   projectId: '15f074c13391ad418e74f898a88f7765',
-  chains: [/*mainnet, */polygon, /*optimism,*/ base, /*baseSepolia,*/ linea, zkSync, zkSyncSepoliaTestnet/*, localhost*/],
+  chains: [/*mainnet, */polygon, /*optimism,*/ base, /*baseSepolia,*/ linea, zkSync, /*zkSyncSepoliaTestnet, localhost*/],
   ssr: false
 });
 const queryClient = new QueryClient();
@@ -88,6 +88,8 @@ function TransactForm() {
   const [receivedAddress, setReceivedAddress] = useState<Address|null>(null);
   const [receivedId, setReceivedId] = useState<BigInt>(BigInt(0));
   const [swapStarted, setSwapStarted] = useState(false);
+  const [approveTransactionReady, setApproveTransactionReady] = useState(false);
+  const [swapTransactionReady, setSwapTransactionReady] = useState(false);
 
   const chainId = useChainId();
   const currentChain = chainLookup[chainId];
@@ -157,9 +159,21 @@ function TransactForm() {
   }
 
 
-  function selectNFT(collection:any, token:any) {
+  async function selectNFT(collection:any, token:any) {
+    setApproveTransactionReady(false);
+    setSwapTransactionReady(false);
     setNftAddress(collection.contract_address);
     setNftId(token.token_id);
+
+    // Why does this fail on zkSync?
+    const result = await prepareTransactionRequest(config, {
+          address: nftAddress,
+          abi,
+          functionName: 'setApprovalForAll',
+          args: [currentChain.address, true]
+    });
+    setApproveTransactionReady(true);
+    console.log(result);
   }
 
   var rawAddress = getAccount(config).address;
@@ -185,7 +199,6 @@ function TransactForm() {
       <div className="p-2">
         {(!swapStarted||status==='pending') && <NFTDetailView chain_name={chainName} collection_address={nftAddress} token_id={nftId.toString()} />}
         {
-          // TODO: Hide old NFT when unwrapping starts
           (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src={busyUrl}/><br/>Unwrapping NFT...</div>):
           <>
           <form>
