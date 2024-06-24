@@ -10,7 +10,7 @@ import {
 
 import {Address} from 'viem';
 import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
-import {getAccount, watchContractEvent, prepareTransactionRequest} from '@wagmi/core';
+import {getAccount, watchContractEvent} from '@wagmi/core';
 import {
   //mainnet,
   polygon,
@@ -88,8 +88,10 @@ function TransactForm() {
   const [receivedAddress, setReceivedAddress] = useState<Address|null>(null);
   const [receivedId, setReceivedId] = useState<BigInt>(BigInt(0));
   const [swapStarted, setSwapStarted] = useState(false);
-  const [approveTransactionReady, setApproveTransactionReady] = useState(false);
-  const [swapTransactionReady, setSwapTransactionReady] = useState(false);
+
+  // Will be used for coordinating transaction preparation and launching
+  //const [approveTransactionReady, setApproveTransactionReady] = useState(false);
+  //const [swapTransactionReady, setSwapTransactionReady] = useState(false);
 
   const chainId = useChainId();
   const currentChain = chainLookup[chainId];
@@ -160,20 +162,20 @@ function TransactForm() {
 
 
   async function selectNFT(collection:any, token:any) {
-    setApproveTransactionReady(false);
-    setSwapTransactionReady(false);
+    // This variables will be used for synchronizing access to prepared transactions
+    /*setApproveTransactionReady(false);
+    setSwapTransactionReady(false);*/
     setNftAddress(collection.contract_address);
     setNftId(token.token_id);
 
-    // Why does this fail on zkSync?
-    const result = await prepareTransactionRequest(config, {
+    // This fails on zkSync
+    /*const result = await prepareTransactionRequest(config, {
           address: nftAddress,
           abi,
           functionName: 'setApprovalForAll',
           args: [currentChain.address, true]
     });
-    setApproveTransactionReady(true);
-    console.log(result);
+    setApproveTransactionReady(true);*/
   }
 
   var rawAddress = getAccount(config).address;
