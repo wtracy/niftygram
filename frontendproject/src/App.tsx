@@ -83,7 +83,6 @@ function TransactForm() {
     e.preventDefault();
 
     if (nftAddress != null) {
-      /* TODO: release watch */ 
       const address = currentChain.address;
       watchHandle = watchContractEvent(config, {
         address,
@@ -98,6 +97,9 @@ function TransactForm() {
               setReceivedAddress(what);
               setReceivedId(id);
               setSwapStarted(false);
+
+              /* TODO: release watch */ 
+              // TODO: Push state?
             }
           }
         }
