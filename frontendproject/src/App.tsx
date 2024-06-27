@@ -134,6 +134,7 @@ function TransactForm() {
 
     setNftId(token.token_id);
     setNftAddress(collection.contract_address);
+    setReceivedAddress(null);
 
     // This fails on zkSync
     /*const result = await prepareTransactionRequest(config, {
