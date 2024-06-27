@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { abi } from "./abi";
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -23,6 +23,7 @@ import {config, chainLookup} from './ChainConfig';
 import busyUrl from '../busy.gif';
 
 const queryClient = new QueryClient();
+var watchHandle = null; // useRef() ?
 
 function TransactForm() {
   const [nftAddress, setNftAddress] = useState(null);
@@ -44,10 +45,23 @@ function TransactForm() {
   }
 
   // TODO: usePrepareContractWrite
-  // TODO: push browser history
-  // TODO: respond to chain change
+  // TODO: respond to wallet connect/disconnect
   const {status, data: _, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
+
+  useEffect(() => {
+    history.replaceState({address: null, id: BigInt(0)}, '');
+    onpopstate = (event) => {
+      const newAddress = event.state.address;
+      if (newAddress == null) {
+        setNftAddress(null);
+      } else {
+        setNftId(event.state.id);
+        setNftAddress(event.state.address);
+      }
+    }
+  }, []);
+
 
   async function submitApproval(e:any) {
     e.preventDefault();
@@ -69,9 +83,9 @@ function TransactForm() {
     e.preventDefault();
 
     if (nftAddress != null) {
-      /* TODO: release watch: const unwatch =*/ 
+      /* TODO: release watch */ 
       const address = currentChain.address;
-      watchContractEvent(config, {
+      watchHandle = watchContractEvent(config, {
         address,
         abi,
         eventName: 'gift',
@@ -107,8 +121,11 @@ function TransactForm() {
     // This variables will be used for synchronizing access to prepared transactions
     /*setApproveTransactionReady(false);
     setSwapTransactionReady(false);*/
-    setNftAddress(collection.contract_address);
+
+    history.pushState({address: collection.contract_address, id: token.token_id}, '');
+
     setNftId(token.token_id);
+    setNftAddress(collection.contract_address);
 
     // This fails on zkSync
     /*const result = await prepareTransactionRequest(config, {
