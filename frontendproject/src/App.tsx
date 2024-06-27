@@ -9,7 +9,7 @@ import {
 
 import {Address} from 'viem';
 import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
-import {getAccount, watchContractEvent} from '@wagmi/core';
+import {getAccount, watchContractEvent, WatchContractEventReturnType} from '@wagmi/core';
 import {
   QueryClientProvider,
   QueryClient,
@@ -23,7 +23,7 @@ import {config, chainLookup} from './ChainConfig';
 import busyUrl from '../busy.gif';
 
 const queryClient = new QueryClient();
-var watchHandle = null; // useRef() ?
+var watchHandle:WatchContractEventReturnType|null = null; // useRef() ?
 
 function TransactForm() {
   const [nftAddress, setNftAddress] = useState(null);
@@ -45,7 +45,7 @@ function TransactForm() {
   }
 
   // TODO: usePrepareContractWrite
-  // TODO: respond to wallet connect/disconnect
+  // TODO: use useAccount() instead of getAccount()
   const {status, data: _, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
 
@@ -92,14 +92,15 @@ function TransactForm() {
           for (const log of logs) {
             const args = log.args;
             if (args.who === getAccount(config).address) {
+              if (watchHandle != null)
+                watchHandle(); // cancel watch
               const what = args.what as Address;
               const id = args.id as BigInt;
               setReceivedAddress(what);
               setReceivedId(id);
               setSwapStarted(false);
 
-              /* TODO: release watch */ 
-              // TODO: Push state?
+              // TODO: Write state?
             }
           }
         }
