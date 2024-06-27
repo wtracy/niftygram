@@ -8,8 +8,8 @@ import {
 } from '@rainbow-me/rainbowkit';
 
 import {Address} from 'viem';
-import {WagmiProvider, useWriteContract, useChainId} from 'wagmi';
-import {getAccount, watchContractEvent, WatchContractEventReturnType} from '@wagmi/core';
+import {WagmiProvider, useWriteContract, useAccount, useChainId} from 'wagmi';
+import {watchContractEvent, WatchContractEventReturnType} from '@wagmi/core';
 import {
   QueryClientProvider,
   QueryClient,
@@ -45,9 +45,14 @@ function TransactForm() {
   }
 
   // TODO: usePrepareContractWrite
-  // TODO: use useAccount() instead of getAccount()
   const {status, data: _, error, writeContract } = useWriteContract(
       {mutation: {onError: transactionFailed}});
+
+  var rawUserAddress = useAccount().address;
+  var userAddress = '';
+  if (rawUserAddress != undefined) {
+    userAddress = rawUserAddress.toString();
+  }
 
   useEffect(() => {
     history.replaceState({address: null, id: BigInt(0)}, '');
@@ -91,7 +96,7 @@ function TransactForm() {
         onLogs(logs) {
           for (const log of logs) {
             const args = log.args;
-            if (args.who === getAccount(config).address) {
+            if (args.who === rawUserAddress) {
               if (watchHandle != null)
                 watchHandle(); // cancel watch
               const what = args.what as Address;
@@ -140,11 +145,6 @@ function TransactForm() {
     setApproveTransactionReady(true);*/
   }
 
-  var rawAddress = getAccount(config).address;
-  var userAddress = '';
-  if (rawAddress != undefined) {
-    userAddress = rawAddress.toString();
-  }
   var chainName:Chain = 'eth-mainnet';
   if (currentChain != undefined)
     chainName = currentChain.name;
