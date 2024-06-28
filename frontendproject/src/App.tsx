@@ -124,7 +124,6 @@ function TransactForm() {
     }
   }
 
-
   async function selectNFT(collection:any, token:any) {
     // This variables will be used for synchronizing access to prepared transactions
     /*setApproveTransactionReady(false);
@@ -150,6 +149,59 @@ function TransactForm() {
   if (currentChain != undefined)
     chainName = currentChain.name;
 
+  // In progress UI
+  function nftPicker() {
+    return <div className="p-5"><NFTPicker address={userAddress} chain_names={[chainName]} on_nft_click={selectNFT} /></div>;
+  }
+
+  function receivedNFT(received:Address) {
+    return <div className="flex justify-center">
+      <div className="p-5">You received:</div>
+      <NFTDetailView chain_name={chainName} collection_address={received} token_id={receivedId.toString()} />
+    </div>;
+  }
+
+  function approveNFT(target:Address) {
+    return <>
+          <NFTDetailView chain_name={chainName} collection_address={target} token_id={nftId.toString()} />
+          <form>
+          <div className="p-2 flex justify-around">
+            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
+            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
+          </div>
+          </form>
+          {(status==='pending')&&<div>Submitting approval...</div>}
+          </>;
+  }
+
+  function waiting() {
+    return <div>
+      <img className="w-1/2 object-scale-down" src={busyUrl}/>
+      {(status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>}
+    </div>
+  }
+
+  // In progress UI
+  // return <>
+  //  <div>{error && String(error)}</div>
+  //  <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
+  //  <div className="flex justify-center">{
+  if (userAddress == null) {
+    //<div>Welcome! To get started, use the button above to connect your wallet!</div>
+  } else if (nftAddress == null) {
+    nftPicker();
+  } else if (receivedAddress != null) {
+    receivedNFT(receivedAddress);
+  } else if (!swapStarted) {
+    approveNFT(nftAddress);
+  } else {
+    waiting();
+  }
+  // }</div>
+  // </GoldRushProvider>
+  // </>
+
+  // Current UI
   return (
   <>
     <div>{error && String(error)}</div>
