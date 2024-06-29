@@ -49,7 +49,7 @@ function TransactForm() {
       {mutation: {onError: transactionFailed}});
 
   var rawUserAddress = useAccount().address;
-  var userAddress = '';
+  var userAddress:string|null = null;
   if (rawUserAddress != undefined) {
     userAddress = rawUserAddress.toString();
   }
@@ -147,9 +147,8 @@ function TransactForm() {
   if (currentChain != undefined)
     chainName = currentChain.name;
 
-  // In progress UI
-  function nftPicker() {
-    return <div className="p-5"><NFTPicker address={userAddress} chain_names={[chainName]} on_nft_click={selectNFT} /></div>;
+  function nftPicker(address:string) {
+    return <div className="p-5"><NFTPicker address={address} chain_names={[chainName]} on_nft_click={selectNFT} /></div>;
   }
 
   function receivedNFT(received:Address) {
@@ -160,83 +159,45 @@ function TransactForm() {
   }
 
   function approveNFT(target:Address) {
-    return <>
-          <NFTDetailView chain_name={chainName} collection_address={target} token_id={nftId.toString()} />
-          <form>
-          <div className="p-2 flex justify-around">
-            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
-            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
-          </div>
-          </form>
-          {(status==='pending')&&<div>Submitting approval...</div>}
-          </>;
+    return <div className="p-2">
+      <NFTDetailView chain_name={chainName} collection_address={target} token_id={nftId.toString()} />
+      <form>
+        <div className="p-2 flex justify-around">
+          <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
+          <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
+        </div>
+      </form>
+      {(status==='pending')&&<div>Submitting approval...</div>}
+    </div>;
   }
 
   function waiting() {
-    return <div>
-      <img className="w-1/2 object-scale-down" src={busyUrl}/>
+    return <div className="p-2 w-1/2 text-center">
+      <div className="justify-center items-center"><img className="object-scale-down" src={busyUrl}/></div>
       {(status==='pending')?<div>Swap pending...</div>:<div>Unwrapping NFT...</div>}
-    </div>
+    </div>;
   }
 
-  // In progress UI
-  // return <>
-  //  <div>{error && String(error)}</div>
-  //  <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
-  //  <div className="flex justify-center">{
-  if (userAddress == null) {
-    //<div>Welcome! To get started, use the button above to connect your wallet!</div>
-  } else if (nftAddress == null) {
-    nftPicker();
-  } else if (receivedAddress != null) {
-    receivedNFT(receivedAddress);
-  } else if (!swapStarted) {
-    approveNFT(nftAddress);
-  } else {
-    waiting();
+  function routeUI() {
+    if (userAddress == null)
+      return <div>Welcome! To get started, use the button above to connect your wallet!</div>
+    if (nftAddress == null)
+      return nftPicker(userAddress);
+    if (receivedAddress != null)
+      return receivedNFT(receivedAddress);
+    if (!swapStarted)
+      return approveNFT(nftAddress);
+    return waiting();
   }
-  // }</div>
-  // </GoldRushProvider>
-  // </>
 
-  // Current UI
-  return (
-  <>
+  return <>
     <div>{error && String(error)}</div>
-    <div className="flex justify-center">
     <GoldRushProvider apikey={import.meta.env.VITE_COVALENT_KEY}>
-    {
-    (nftAddress == null) ?
-        <div className="p-5"><NFTPicker address={userAddress} chain_names={[chainName]} on_nft_click={selectNFT} /></div>
-    :
-      (receivedAddress == null) ? 
-
-      <div className="p-2">
-        {(!swapStarted||status==='pending') && <NFTDetailView chain_name={chainName} collection_address={nftAddress} token_id={nftId.toString()} />}
-        {
-          (swapStarted)?((status==='pending')?<div>Swap pending...</div>:<div><img className="w-1/2 object-scale-down" src={busyUrl}/><br/>Unwrapping NFT...</div>):
-          <>
-          <form>
-          <div className="p-2 flex justify-around">
-            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={submitApproval} id="approve" type="submit" disabled={status==='pending'}>Approve transaction</button></div>
-            <div><button className="text-white hover:border-black bg-gradient-to-b from-fuchsia-500 via-purple-700 to-violet-900 hover:bg-gradient-to-br" onClick={execute} id="execute" type="submit" disabled={status==='pending'}>Swap</button></div>
-          </div>
-          </form>
-          {(status==='pending')&&<div>Submitting approval...</div>}
-          </> 
-        }
-      </div>
-
-      :
-      <div className="flex justify-center">
-      <div className="p-5">You received:</div>
-      <NFTDetailView chain_name={chainName} collection_address={receivedAddress} token_id={receivedId.toString()} />
-      </div>
-    }
+      <div className="flex justify-center">{
+        routeUI()
+      }</div>
     </GoldRushProvider>
-    </div>
-  </>
-  );
+  </>;
 }
 
 function App() {
