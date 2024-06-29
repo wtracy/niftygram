@@ -104,8 +104,6 @@ function TransactForm() {
               setReceivedAddress(what);
               setReceivedId(id);
               setSwapStarted(false);
-
-              // TODO: Write state?
             }
           }
         }
@@ -125,7 +123,7 @@ function TransactForm() {
   }
 
   async function selectNFT(collection:any, token:any) {
-    // This variables will be used for synchronizing access to prepared transactions
+    // These variables will be used for synchronizing access to prepared transactions
     /*setApproveTransactionReady(false);
     setSwapTransactionReady(false);*/
 
